@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Info
+Comment=Welcome Guide
+Exec=xdg-open /usr/share/doc/sunrise.md
+Icon=help-about
+Terminal=false
+Type=Application
