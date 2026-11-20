@@ -1,0 +1,41 @@
+name: Build ISO
+
+on:
+  workflow_dispatch: # Adds a "Run workflow" button in the Actions tab
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 512
+          temp-reserve-mb: 512
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+
+      - name: Install BlueBuild CLI
+        run: |
+          docker run --pull always --rm ghcr.io/blue-build/cli:latest-installer | sudo bash
+
+      - name: Generate ISO
+        run: |
+          sudo bluebuild generate-iso \
+            --iso-name custom-os.iso \
+            recipe recipes/recipe.yml
+
+      - name: Upload ISO as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunrise-kinoite-iso
+          path: sunriselinux-kinoite.iso
+          retention-days: 1
